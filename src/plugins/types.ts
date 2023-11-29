@@ -13,6 +13,7 @@ export enum ReferenceKind {
   VARIABLE,
   CONTEXT,
   NONE,
+  I18n
 }
 
 export type ImportModule = {
@@ -52,7 +53,8 @@ export type ASTTransform = (astResults: Array<ASTResult<ts.Node>>, options: Vc2c
 export interface ASTConvertPlugins {
   [ts.SyntaxKind.Decorator]: {
     [ts.SyntaxKind.PropertyAssignment]: Array<ASTConverter<ts.PropertyAssignment>>,
-    [ts.SyntaxKind.MethodDeclaration]: Array<ASTConverter<ts.MethodDeclaration>>
+    [ts.SyntaxKind.MethodDeclaration]: Array<ASTConverter<ts.MethodDeclaration>>,
+    [ts.SyntaxKind.ShorthandPropertyAssignment]: Array<ASTConverter<ts.ShorthandPropertyAssignment>>
   }
   [ts.SyntaxKind.Identifier]: Array<ASTConverter<ts.Identifier>>
   [ts.SyntaxKind.HeritageClause]: Array<ASTConverter<ts.HeritageClause>>

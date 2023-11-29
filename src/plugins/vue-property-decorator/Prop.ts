@@ -8,6 +8,7 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
   if (!node.decorators) {
     return false
   }
+
   const decorator = node.decorators.find((el) => (el.expression as ts.CallExpression).expression.getText() === propDecoratorName)
   if (decorator) {
     const tsModule = options.typescript

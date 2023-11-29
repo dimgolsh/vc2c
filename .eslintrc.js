@@ -19,8 +19,12 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'no-undef': 'off',
     'no-unused-vars': 'off',
+    'comma-dangle': 'off',
+    'semi': 'off',
     strict: 'off',
     camelcase: 'off',
+    indent: 'off',
+    'no-tabs': 'off',
     '@typescript-eslint/quotes': ['error', 'single'],
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/member-delimiter-style': ['error', { multiline: { delimiter: 'comma', requireLast: false }, singleline: { delimiter: 'comma', requireLast: false }, overrides: { interface: { multiline: { delimiter: 'none' } } } }]
