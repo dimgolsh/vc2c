@@ -211,11 +211,11 @@ export function convertASTResultToImport (astResults: ASTResult<ts.Node>[], opti
     }
   }
 
-  if (options.compatible && importMap.has('@vue/composition-api')) {
+  if (importMap.has('vue')) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const temp = importMap.get('@vue/composition-api')!
+    const temp = importMap.get('vue')!
     temp.named.add('defineComponent')
-    importMap.set('@vue/composition-api', temp)
+    importMap.set('vue', temp)
   }
 
   return Array.from(importMap).map((el) => {
@@ -250,22 +250,10 @@ export function runPlugins (
   log('Make setup function')
   const setupFn = convertASTResultToSetupFn(results, options)
   log('Make default export object')
-  const exportDefaultExpr = (options.compatible)
-    ? tsModule.createCall(
-      tsModule.createIdentifier('defineComponent'),
-      undefined,
-      [tsModule.createObjectLiteral(
-        [
-          ...results
-            .filter((el) => el.kind === ASTResultKind.OBJECT)
-            .map((el) => el.nodes)
-            .reduce((array, el) => array.concat(el), []) as ts.PropertyAssignment[],
-          setupFn
-        ],
-        true
-      )]
-    )
-    : tsModule.createObjectLiteral(
+  const exportDefaultExpr = tsModule.createCall(
+    tsModule.createIdentifier('defineComponent'),
+    undefined,
+    [tsModule.createObjectLiteral(
       [
         ...results
           .filter((el) => el.kind === ASTResultKind.OBJECT)
@@ -274,7 +262,8 @@ export function runPlugins (
         setupFn
       ],
       true
-    )
+    )]
+  )
 
   const exportAssignment = copySyntheticComments(
     tsModule,

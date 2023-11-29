@@ -6,7 +6,8 @@ import { log } from './debug'
 
 const vueClassModules = [
   'vue-class-component',
-  'vue-property-decorator'
+  'vue-property-decorator',
+  'common/vue'
 ]
 
 export function convertAST (sourceFile: ts.SourceFile, options: Vc2cOptions, program: ts.Program): string {
