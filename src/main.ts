@@ -12,6 +12,12 @@ export default class Notification extends Vue {
 	@Prop({ type: Object, required: true })
 	public value: INotificationModel;
 
+    @Prop(Array)
+	errors: IQAErrorModel[];
+
+    @Prop({ type: Array, required: true })
+	tqs: IQAErrorModel[];
+
     @Prop({ type: Boolean, required: true })
 	public value: boolean;
 

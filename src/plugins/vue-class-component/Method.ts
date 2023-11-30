@@ -7,7 +7,7 @@ export const convertMethod: ASTConverter<ts.MethodDeclaration> = (node, options)
 	const methodName = node.name.getText();
 
 	const outputMethod = tsModule.createArrowFunction(
-		node.modifiers?.filter((f) => f.kind !== ts.SyntaxKind.PublicKeyword),
+		node.modifiers?.filter((f) => ![ts.SyntaxKind.PublicKeyword, ts.SyntaxKind.PrivateKeyword].includes(f.kind)),
 		node.typeParameters,
 		node.parameters,
 		node.type,

@@ -25,13 +25,11 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 			if (node.type?.kind === ts.SyntaxKind.TypeReference) {
 				hasType = true;
 				const typeName = (node.type as ts.TypeReferenceNode).typeName;
-				console.log('🚀 ~ file: Prop.ts:15 ~ decorator:', typeName.getText());
-				console.log('🚀 ~ file: Prop.ts:15 ~ decoratorArguments[0]:', propArguments.properties[0].getChildAt(2));
 
 				const findType = propArguments.properties.findIndex((f) => f.name?.getText() === 'type');
 
 				if (findType !== -1) {
-          const ident = propArguments.properties[0].getChildAt(2).getText()
+					const ident = propArguments.properties[0].getChildAt(2).getText();
 					const node = ts.createPropertyAssignment(
 						ts.createIdentifier('type'),
 						ts.createAsExpression(
@@ -41,7 +39,42 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 							]),
 						),
 					);
-					propArguments.properties[findType] = node;
+					Object.assign(propArguments.properties[findType], node);
+				}
+			}
+
+			if (node.type?.kind === ts.SyntaxKind.ArrayType) {
+				hasType = true;
+				const typeName = (node.type as ts.ArrayTypeNode).elementType;
+
+				if (!propArguments.properties) {
+					const node = ts.createPropertyAssignment(
+						ts.createIdentifier('type'),
+						ts.createAsExpression(
+							ts.createIdentifier('Array'),
+							ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
+								ts.createArrayTypeNode(ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined)),
+							]),
+						),
+					);
+					// TODO: Add
+				} else {
+					const findType = propArguments.properties.findIndex((f) => f.name?.getText() === 'type');
+
+					if (findType !== -1) {
+						const node = ts.createPropertyAssignment(
+							ts.createIdentifier('type'),
+							ts.createAsExpression(
+								ts.createIdentifier('Array'),
+								ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
+									ts.createArrayTypeNode(
+										ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined),
+									),
+								]),
+							),
+						);
+						Object.assign(propArguments.properties[findType], node);
+					}
 				}
 			}
 
@@ -50,8 +83,6 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 				tsModule.createPropertyAssignment(tsModule.createIdentifier(propName), propArguments),
 				node,
 			);
-
-			console.log(hasType);
 
 			const imports = hasType
 				? [
