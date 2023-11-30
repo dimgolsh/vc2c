@@ -1,17 +1,30 @@
 console.log(1);
 import { convert } from './index';
 
-const defaultCode = `import { Component, Prop, Vue } from 'common/vue';
-import { IQAErrorModel } from 'api/smartcat/segments';
-import i18n from '@/common/i18n';
+const defaultCode = `import { Component, Vue } from 'common/vue';
+import i18n from './i18n';
+import { inject } from 'common/di';
+import { INotificationModel } from '@/services/notifications';
+import { ScText } from '@smartcat/design-system';
 
-@Component({ i18n })
-export default class ErrorsTip extends Vue {
-	@Prop(Array)
-	errors: IQAErrorModel[];
+@Component({ components: { NotificationTemplate, MdButton } })
+export default class Notification extends Vue {
+	@Prop({ type: Object, required: true })
+	public value: INotificationModel;
 
-	getClass(isCritical: boolean) {
-		return { 'l-qa-errors-tip__row_critical': isCritical };
+    @Prop({ type: Boolean, required: true })
+	public value: boolean;
+
+	public get hasOkButton() {
+		return Boolean(this.value?.okText);
+	}
+
+	public get hasCancelButton() {
+		return Boolean(this.value?.cancelText);
+	}
+
+	public close(value: boolean) {
+		this.$emit('close', value);
 	}
 }`;
 

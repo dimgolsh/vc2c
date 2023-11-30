@@ -16,7 +16,6 @@ export const addI18nCompos: ASTTransform = (astResults, options) => {
 						const propertyName = node.name.getText();
 						const i18nkey = convertI18nKey(propertyName);
 						if (i18nkey) {
-							console.log('🚀 ~ file: addI18nCompos.ts:18 ~ return ~ i18nkey:', i18nkey);
 							dependent.add(i18nkey);
 							return tsModule.createIdentifier(i18nkey);
 						}
@@ -54,7 +53,6 @@ export const addI18nCompos: ASTTransform = (astResults, options) => {
 	const patterns: ts.BindingElement[] = [];
 
 	dependent.forEach((f) => {
-		console.log('🚀 ~ file: addI18nCompos.ts:55 ~ f:', f);
 		patterns.push(ts.createBindingElement(undefined, undefined, ts.createIdentifier(f as string), undefined));
 		return f;
 	});
@@ -72,7 +70,6 @@ export const addI18nCompos: ASTTransform = (astResults, options) => {
 		),
 	);
 
-	console.log('🚀 ~ file: addI18nCompos.ts:85 ~ astResults:', astResults);
 	return [
 		{
 			kind: ASTResultKind.COMPOSITION,
