@@ -1,5 +1,9 @@
-console.log(1);
 import { convert } from './index';
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import * as monaco from 'monaco-editor'
+import { ScriptTarget } from 'typescript';
+console.log(1);
 
 const defaultCode = `import { Component, Vue } from 'common/vue';
 import i18n from './i18n';
@@ -39,6 +43,65 @@ const vc2cConfig = {
 	debug: true,
 };
 
-const v = convert(defaultCode, vc2cConfig);
+function init (code: string, options: Partial<Vc2cOptions>) {
+	self.MonacoEnvironment = {
+		getWorker (_, label) {
+			if (label === 'typescript' || label === 'javascript') {
+				return new tsWorker();
+			}
+			return new editorWorker();
+		},
+	};
+	monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+		experimentalDecorators: true,
+		noResolve: true,
+		target: ScriptTarget.ESNext,
+		allowNonTsExtensions: true,
+		noSemanticValidation: true,
+		noSyntaxValidation: true,
+		noImplicitAny: false,
+		noEmit: true,
+		lib: ['esnext', 'dom', 'dom.iterable', 'scripthost'],
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		module: 'esnext' as any,
+		strict: false,
+		esModuleInterop: true,
+		resolveJsonModule: true,
+	});
+
+	const editor = monaco.editor.create(document.getElementById('editor')!, {
+		value: code,
+		language: 'typescript',
+		theme: 'vs-dark',
+		minimap: {
+			enabled: false,
+		},
+	});
+
+	const output = monaco.editor.create(document.getElementById('output')!, {
+		value: convert(code, options),
+		language: 'typescript',
+		theme: 'vs-dark',
+		minimap: {
+			enabled: false,
+		},
+	});
+
+	const setOutput = () => {
+		try {
+			output.setValue(convert(editor.getValue(), options));
+		} catch (error) {}
+	};
+	editor.onDidChangeModelContent(() => {
+		setOutput();
+	});
+
+	window.addEventListener('resize', () => {
+		editor.layout();
+		output.layout();
+	});
+}
+
+const v = init(defaultCode, vc2cConfig);
 
 console.log(v);
