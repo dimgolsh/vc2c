@@ -4,6 +4,81 @@ import { copySyntheticComments } from '../../utils';
 
 const propDecoratorName = 'Prop';
 
+const getArguments = (
+	node: ts.PropertyDeclaration,
+	propArguments: ts.ObjectLiteralExpression,
+): ts.ObjectLiteralExpression => {
+	// @Prop({ type: Object, required: true })
+	// public value: INotificationModel;
+	if (node.type?.kind === ts.SyntaxKind.TypeReference) {
+		const args = propArguments.properties.map((type) => {
+			const typeName = (node.type as ts.TypeReferenceNode).typeName;
+			const ident = propArguments.properties[0].getChildAt(2).getText();
+
+			if (type.name?.getText() === 'type') {
+				return ts.createPropertyAssignment(
+					ts.createIdentifier('type'),
+					ts.createAsExpression(
+						ts.createIdentifier(ident),
+						ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
+							ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined),
+						]),
+					),
+				);
+			}
+
+			return type;
+		});
+
+		return ts.createObjectLiteral(args);
+	}
+
+	// @Prop({ type: Array, required: true })
+	// tqs: IQAErrorModel[];
+	if (node.type?.kind === ts.SyntaxKind.ArrayType && propArguments.properties) {
+		const typeName = (node.type as ts.ArrayTypeNode).elementType;
+
+		const args = propArguments.properties.map((type) => {
+			if (type.name?.getText() === 'type') {
+				return ts.createPropertyAssignment(
+					ts.createIdentifier('type'),
+					ts.createAsExpression(
+						ts.createIdentifier('Array'),
+						ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
+							ts.createArrayTypeNode(ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined)),
+						]),
+					),
+				);
+			}
+
+			return type;
+		});
+
+		return ts.createObjectLiteral(args);
+	}
+
+	// @Prop(Array)
+	// tqs: IQAErrorModel[];
+	if (node.type?.kind === ts.SyntaxKind.ArrayType && !propArguments.properties) {
+		const typeName = (node.type as ts.ArrayTypeNode).elementType;
+		console.log('🚀 ~ file: Prop.ts:52 ~ node.type:', node.type);
+
+		return ts.createObjectLiteral([
+			ts.createPropertyAssignment(
+				ts.createIdentifier('type'),
+				ts.createAsExpression(
+					ts.createIdentifier('Array'),
+					ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
+						ts.createArrayTypeNode(ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined)),
+					]),
+				),
+			),
+		]);
+	}
+
+	return propArguments;
+};
+
 export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options) => {
 	if (!node.decorators) {
 		return false;
@@ -16,72 +91,19 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 	if (decorator) {
 		const tsModule = options.typescript;
 		const decoratorArguments = (decorator.expression as ts.CallExpression).arguments;
-		let hasType = false;
 
 		if (decoratorArguments.length > 0) {
 			const propName = node.name.getText();
 			const propArguments = decoratorArguments[0] as ts.ObjectLiteralExpression;
 
-			if (node.type?.kind === ts.SyntaxKind.TypeReference) {
-				hasType = true;
-				const typeName = (node.type as ts.TypeReferenceNode).typeName;
-
-				const findType = propArguments.properties.findIndex((f) => f.name?.getText() === 'type');
-
-				if (findType !== -1) {
-					const ident = propArguments.properties[0].getChildAt(2).getText();
-					const node = ts.createPropertyAssignment(
-						ts.createIdentifier('type'),
-						ts.createAsExpression(
-							ts.createIdentifier(ident),
-							ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
-								ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined),
-							]),
-						),
-					);
-					Object.assign(propArguments.properties[findType], node);
-				}
-			}
-
-			if (node.type?.kind === ts.SyntaxKind.ArrayType) {
-				hasType = true;
-				const typeName = (node.type as ts.ArrayTypeNode).elementType;
-
-				if (!propArguments.properties) {
-					const node = ts.createPropertyAssignment(
-						ts.createIdentifier('type'),
-						ts.createAsExpression(
-							ts.createIdentifier('Array'),
-							ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
-								ts.createArrayTypeNode(ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined)),
-							]),
-						),
-					);
-					// TODO: Add
-				} else {
-					const findType = propArguments.properties.findIndex((f) => f.name?.getText() === 'type');
-
-					if (findType !== -1) {
-						const node = ts.createPropertyAssignment(
-							ts.createIdentifier('type'),
-							ts.createAsExpression(
-								ts.createIdentifier('Array'),
-								ts.createTypeReferenceNode(ts.createIdentifier('PropType'), [
-									ts.createArrayTypeNode(
-										ts.createTypeReferenceNode(ts.createIdentifier(typeName.getText()), undefined),
-									),
-								]),
-							),
-						);
-						Object.assign(propArguments.properties[findType], node);
-					}
-				}
-			}
-
 			const nodeRes = copySyntheticComments(
 				tsModule,
-				tsModule.createPropertyAssignment(tsModule.createIdentifier(propName), propArguments),
+				tsModule.createPropertyAssignment(tsModule.createIdentifier(propName), getArguments(node, propArguments)),
 				node,
+			);
+
+			const hasType = [ts.SyntaxKind.TypeReference, ts.SyntaxKind.ArrayType].includes(
+				(node.type as ts.TypeReferenceNode).kind,
 			);
 
 			const imports = hasType
