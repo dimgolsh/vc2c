@@ -184,17 +184,30 @@ export function convertASTResultToSetupFn(
 	);
 }
 
+export interface Clause {
+	named: Set<string>;
+	default?: string;
+}
+
+const importMap = new Map<string, Clause>();
+
+export const clearImport = () => importMap.clear();
+
+export const addImport = (key: string, value: string) => {
+	if (!importMap.has(key)) {
+		importMap.set(key, { named: new Set() });
+	}
+	const temp = importMap.get(key)!;
+	temp.named.add(value);
+	importMap.set(key, temp);
+};
+
 export function convertASTResultToImport(
 	astResults: ASTResult<ts.Node>[],
 	options: Vc2cOptions,
 ): ts.ImportDeclaration[] {
-	interface Clause {
-		named: Set<string>;
-		default?: string;
-	}
-
 	const tsModule = options.typescript;
-	const importMap = new Map<string, Clause>();
+
 	for (const result of astResults) {
 		for (const importInfo of result.imports) {
 			const key: string = 'external' in importInfo ? importInfo.external : importInfo.path;
@@ -209,16 +222,7 @@ export function convertASTResultToImport(
 		}
 	}
 
-	if (!importMap.has('vue')) {
-		importMap.set('vue', { named: new Set() });
-	}
-
-	if (importMap.has('vue')) {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		const temp = importMap.get('vue')!;
-		temp.named.add('defineComponent');
-		importMap.set('vue', temp);
-	}
+	addImport('vue', 'defineComponent');
 
 	return Array.from(importMap).map((el) => {
 		const [key, clause] = el;

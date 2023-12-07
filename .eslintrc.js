@@ -1,40 +1,41 @@
 module.exports = {
-  root: true,
-  plugins: [
-    '@typescript-eslint/eslint-plugin'
-  ],
-  env: {
-    es6: true,
-    node: true,
-  },
-  extends: [
-    'standard',
-    'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-  ],
-  rules: {
-    'no-console': 'off',
-    'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-    'no-undef': 'off',
-    'no-unused-vars': 'off',
-    'comma-dangle': 'off',
-    'semi': 'off',
-    strict: 'off',
-    camelcase: 'off',
-    indent: 'off',
-    'no-tabs': 'off',
-    '@typescript-eslint/quotes': ['error', 'single'],
-    '@typescript-eslint/explicit-function-return-type': 'off',
-    '@typescript-eslint/member-delimiter-style': ['error', { multiline: { delimiter: 'comma', requireLast: false }, singleline: { delimiter: 'comma', requireLast: false }, overrides: { interface: { multiline: { delimiter: 'none' } } } }]
-  },
-  parserOptions: {
-    sourceType: 'module',
-    ecmaFeatures: {
-      jsx: false,
-    },
-    project: ['./tsconfig.json'],
-    tsconfigRootDir: __dirname,
-  }
-}
+	root: true,
+	plugins: ['@typescript-eslint/eslint-plugin'],
+	env: {
+		es6: true,
+		node: true,
+	},
+	extends: [
+		'standard',
+		'eslint:recommended',
+		'plugin:@typescript-eslint/eslint-recommended',
+		'plugin:@typescript-eslint/recommended',
+		'plugin:@typescript-eslint/recommended-requiring-type-checking',
+	],
+	rules: {
+		'no-console': 'off',
+		'space-before-function-paren': 'off',
+		'@typescript-eslint/explicit-module-boundary-types': 'off',
+		'@typescript-eslint/no-non-null-assertion': 'off',
+		'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
+		'no-undef': 'off',
+		'no-unused-vars': 'off',
+		'comma-dangle': 'off',
+		'@typescript-eslint/member-delimiter-style': 'off',
+		'semi': 'off',
+		'strict': 'off',
+		'camelcase': 'off',
+		'indent': 'off',
+		'no-tabs': 'off',
+		'@typescript-eslint/quotes': ['error', 'single'],
+		'@typescript-eslint/explicit-function-return-type': 'off',
+	},
+	parserOptions: {
+		sourceType: 'module',
+		ecmaFeatures: {
+			jsx: false,
+		},
+		project: ['./tsconfig.json'],
+		tsconfigRootDir: __dirname,
+	},
+};

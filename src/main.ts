@@ -1,8 +1,14 @@
 import { convert } from './index';
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
-import * as monaco from 'monaco-editor'
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
+import * as monaco from 'monaco-editor';
+
 import { ScriptTarget } from 'typescript';
+import { Vc2cOptions } from './options';
 console.log(1);
 
 const defaultCode = `import { Component, Vue } from 'common/vue';
@@ -25,6 +31,25 @@ export default class Notification extends Vue {
     @Prop({ type: Boolean, required: true })
 	public value: boolean;
 
+	isShownResults = true
+
+
+	created() {
+	
+		this.$watch(
+			() => this.labels,
+			(value) => {
+				this.$emit('labels-changed', value);
+			},
+		);
+		this.$watch(
+			() => this.isShownResults,
+			(value) => {
+				this.displaySelectOptions = value;
+			},
+		);
+	}
+
 	public get hasOkButton() {
 		return Boolean(this.value?.okText);
 	}
@@ -43,12 +68,16 @@ const vc2cConfig = {
 	debug: true,
 };
 
-function init (code: string, options: Partial<Vc2cOptions>) {
+function init(code: string, options: Partial<Vc2cOptions>) {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
 	self.MonacoEnvironment = {
-		getWorker (_, label) {
+		getWorker(_: any, label: string) {
 			if (label === 'typescript' || label === 'javascript') {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, new-cap
 				return new tsWorker();
 			}
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, new-cap
 			return new editorWorker();
 		},
 	};
@@ -62,7 +91,7 @@ function init (code: string, options: Partial<Vc2cOptions>) {
 		noImplicitAny: false,
 		noEmit: true,
 		lib: ['esnext', 'dom', 'dom.iterable', 'scripthost'],
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment
 		module: 'esnext' as any,
 		strict: false,
 		esModuleInterop: true,
@@ -90,6 +119,7 @@ function init (code: string, options: Partial<Vc2cOptions>) {
 	const setOutput = () => {
 		try {
 			output.setValue(convert(editor.getValue(), options));
+			// eslint-disable-next-line no-empty
 		} catch (error) {}
 	};
 	editor.onDidChangeModelContent(() => {

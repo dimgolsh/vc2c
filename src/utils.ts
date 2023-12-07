@@ -131,7 +131,7 @@ export function convertNodeToASTResult<T extends ts.Node>(tsModule: typeof ts, n
 		reference: ReferenceKind.NONE,
 		attributes: [],
 		tag: 'IheritObjProperty',
-		nodes: [addTodoComment(tsModule, node, 'Can\'t convert this object property.', false)],
+		nodes: [addTodoComment(tsModule, node, "Can't convert this object property.", false)],
 	};
 }
 
@@ -150,6 +150,28 @@ export const convertI18nKey = (key: string) => {
 		['$tc', 'tc'],
 		['$te', 'te'],
 		['$n', 'n'],
+	]);
+
+	return contextKey.get(key);
+};
+
+export const convertContextKey = (key: string) => {
+	const contextKey = new Map([
+		['$attrs', 'attrs'],
+		['$parent', 'parent'],
+		['$root', 'root'],
+		['$listeners', 'listeners'],
+		['$emit', 'emit'],
+	]);
+
+	return contextKey.get(key);
+};
+
+export const convertContextWithImport = (key: string) => {
+	const contextKey = new Map([
+		['$watch', { key: 'watch', import: { key: 'vue', path: 'watch' } }],
+		['$slots', { key: 'slots', import: { key: 'vue', path: 'useSlots' } }],
+		['$nextTick', { key: 'nextTick', import: { key: 'vue', path: 'nextTick' } }],
 	]);
 
 	return contextKey.get(key);

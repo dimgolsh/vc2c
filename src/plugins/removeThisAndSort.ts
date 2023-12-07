@@ -1,6 +1,7 @@
 import { ASTTransform, ASTResult, ReferenceKind, ASTResultKind } from './types';
 import type ts from 'typescript';
-import { addTodoComment, convertI18nKey } from '../utils';
+import { addTodoComment, convertContextKey, convertContextWithImport, convertI18nKey } from '../utils';
+import { addImport } from '.';
 
 export const removeThisAndSort: ASTTransform = (astResults, options) => {
 	const tsModule = options.typescript;
@@ -14,19 +15,6 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 	const domeRefVariables = getReferences(ReferenceKind.VARIABLE_NON_NULL_VALUE);
 	const propVariables = getReferences(ReferenceKind.PROPS);
 	const variables = getReferences(ReferenceKind.VARIABLE);
-
-	const convertContextKey = (key: string) => {
-		const contextKey = new Map([
-			['$attrs', 'attrs'],
-			['$slots', 'slots'],
-			['$parent', 'parent'],
-			['$root', 'root'],
-			['$listeners', 'listeners'],
-			['$emit', 'emit'],
-		]);
-
-		return contextKey.get(key);
-	};
 
 	let dependents: string[] = [];
 
@@ -62,15 +50,19 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 						} else {
 							const convertKey = convertContextKey(propertyName);
 							if (convertKey) {
-								return tsModule.createPropertyAccess(
-									tsModule.createIdentifier(options.setupContextKey),
-									tsModule.createIdentifier(convertKey),
-								);
+								return tsModule.createIdentifier(convertKey);
 							}
 
 							const i18nkey = convertI18nKey(propertyName);
 							if (i18nkey) {
 								return tsModule.createIdentifier(i18nkey);
+							}
+
+							const convertWithImport = convertContextWithImport(propertyName);
+
+							if (convertWithImport) {
+								addImport(convertWithImport.import.key, convertWithImport.import.path);
+								return tsModule.createIdentifier(convertWithImport.key);
 							}
 
 							return addTodoComment(
@@ -82,7 +74,7 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 									),
 									tsModule.createIdentifier(propertyName),
 								),
-								'Check this convert result, it can work well in 80% case.',
+								'Check this convert',
 								true,
 							);
 						}
@@ -104,6 +96,8 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 			};
 		}
 		dependents = [];
+
+		console.log('🚀 ~ file: removeThisAndSort.ts:92 ~ transformResults ~ astResult.nodes:', astResult);
 		const nodes = tsModule.transform(astResult.nodes, [transformer()], { module: tsModule.ModuleKind.ESNext })
 			.transformed;
 
@@ -118,6 +112,7 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 
 	const astResultNoDependents = transformResults.filter((el) => el.nodeDependents.length === 0);
 	let otherASTResults = transformResults.filter((el) => el.nodeDependents.length !== 0);
+	console.log('🚀 ~ file: removeThisAndSort.ts:105 ~ otherASTResults:', otherASTResults);
 	let result: ASTResult<ts.Node>[] = [...astResultNoDependents];
 	const resultHaveDependents = astResultNoDependents
 		.map((el) => el.attributes)
@@ -138,6 +133,6 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 			break;
 		}
 	} while (result.length < astResults.length);
-
+	console.log('🚀 ~ file: removeThisAndSort.ts:144 ~ result:', result);
 	return result;
 };
