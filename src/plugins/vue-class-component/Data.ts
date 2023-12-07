@@ -26,7 +26,7 @@ export const convertData: ASTConverter<ts.PropertyDeclaration> = (node, options,
 		imports: [
 			{
 				named,
-				external: options.compatible ? '@vue/composition-api' : 'vue',
+				external: 'vue',
 			},
 		],
 		reference: isRef ? ReferenceKind.VARIABLE_VALUE : ReferenceKind.VARIABLE,

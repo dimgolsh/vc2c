@@ -1,6 +1,6 @@
-import { ASTTransform, ASTResult, ReferenceKind, ASTResultKind } from './types';
+import { ASTTransform, ReferenceKind, ASTResultKind } from './types';
 import type ts from 'typescript';
-import { addTodoComment, convertI18nKey } from '../utils';
+import { convertI18nKey } from '../utils';
 
 export const addI18nCompos: ASTTransform = (astResults, options) => {
 	console.log('before', astResults);
@@ -29,21 +29,11 @@ export const addI18nCompos: ASTTransform = (astResults, options) => {
 		};
 	};
 
-	const transformResults = astResults.map((astResult) => {
+	astResults.forEach((astResult) => {
 		if (astResult.kind === ASTResultKind.OBJECT) {
-			return {
-				...astResult,
-				nodeDependents: [],
-			};
+			return null;
 		}
-
-		const nodes = tsModule.transform(astResult.nodes, [transformer()], { module: tsModule.ModuleKind.ESNext })
-			.transformed;
-
-		return {
-			...astResult,
-			nodes,
-		};
+		tsModule.transform(astResult.nodes, [transformer()], { module: tsModule.ModuleKind.ESNext });
 	});
 
 	if (dependent.size === 0) {

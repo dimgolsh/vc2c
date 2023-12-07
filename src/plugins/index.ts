@@ -22,6 +22,7 @@ import { convertRender } from './vue-class-component/Render';
 import { convertInject } from './vue-property-decorator/Inject';
 import { convertProvide } from './vue-property-decorator/Provide';
 import { addI18nCompos } from './addI18nCompos';
+import { addRefs } from './addRefs';
 import { convertComponents } from './vue-class-component/object/Components';
 
 export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
@@ -52,7 +53,7 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 			convertEmitMethod,
 			convertMethod,
 		],
-		after: [mergeName, mergeProps, mergeComputed, addI18nCompos, removeThisAndSort],
+		after: [mergeName, mergeProps, mergeComputed, addRefs, addI18nCompos, removeThisAndSort],
 	};
 }
 

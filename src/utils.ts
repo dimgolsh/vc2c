@@ -73,6 +73,7 @@ export function isPrimitiveType(tsModule: typeof ts, returnType: ts.Type): boole
 		!!(returnType.flags & tsModule.TypeFlags.StringLike) ||
 		!!(returnType.flags & tsModule.TypeFlags.BooleanLike) ||
 		!!(returnType.flags & tsModule.TypeFlags.Null) ||
+		!!(returnType.flags & tsModule.TypeFlags.Object) ||
 		!!(returnType.flags & tsModule.TypeFlags.Undefined)
 	);
 }

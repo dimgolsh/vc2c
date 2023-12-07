@@ -53,11 +53,13 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 								return tsModule.createIdentifier(convertKey);
 							}
 
+							// i18n
 							const i18nkey = convertI18nKey(propertyName);
 							if (i18nkey) {
 								return tsModule.createIdentifier(i18nkey);
 							}
 
+							// watch, nextTick
 							const convertWithImport = convertContextWithImport(propertyName);
 
 							if (convertWithImport) {
@@ -76,6 +78,17 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 								),
 								'Check this convert',
 								true,
+							);
+						}
+					}
+
+					if (node.expression.kind === tsModule.SyntaxKind.PropertyAccessExpression) {
+						const propertyName = node.name.getText();
+						if (refVariables.includes(propertyName)) {
+							dependents.push(propertyName);
+							return tsModule.createPropertyAccess(
+								tsModule.createIdentifier(propertyName),
+								tsModule.createIdentifier('value'),
 							);
 						}
 					}

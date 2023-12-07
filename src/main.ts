@@ -17,7 +17,7 @@ import { inject } from 'common/di';
 import { INotificationModel } from '@/services/notifications';
 import { ScText } from '@smartcat/design-system';
 
-@Component({ components: { NotificationTemplate, MdButton } })
+@Component({ i18n, components: { NotificationTemplate, MdButton } })
 export default class Notification extends Vue {
 	@Prop({ type: Object, required: true })
 	public value: INotificationModel;
@@ -31,7 +31,18 @@ export default class Notification extends Vue {
     @Prop({ type: Boolean, required: true })
 	public value: boolean;
 
+	get cancelButtonText() {
+		return this.cancelButton ? this.cancelButton : (this.$t('Cancel') as string);
+	}
+
 	isShownResults = true
+
+	mounted() {
+		this.$nextTick();
+		(this.$refs.inputLabel as HTMLElement).focus();
+		const { y, height } = (this.$refs.labelbutton as HTMLElement).getBoundingClientRect();
+		const layout = document.getElementById('layout-top-left-container').clientHeight;
+	}
 
 
 	created() {
@@ -40,12 +51,6 @@ export default class Notification extends Vue {
 			() => this.labels,
 			(value) => {
 				this.$emit('labels-changed', value);
-			},
-		);
-		this.$watch(
-			() => this.isShownResults,
-			(value) => {
-				this.displaySelectOptions = value;
 			},
 		);
 	}
