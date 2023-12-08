@@ -1,7 +1,7 @@
 import { ASTTransform, ASTResult, ReferenceKind, ASTResultKind } from './types';
 import type ts from 'typescript';
 import { addTodoComment, convertContextKey, convertContextWithImport, convertI18nKey } from '../utils';
-import { addImport } from '.';
+import { addImport, setupKeys } from '.';
 
 export const removeThisAndSort: ASTTransform = (astResults, options) => {
 	const tsModule = options.typescript;
@@ -40,6 +40,7 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 							);
 						} else if (propVariables.includes(propertyName)) {
 							dependents.push(propertyName);
+							setupKeys.add('props');
 							return tsModule.createPropertyAccess(
 								tsModule.createIdentifier(options.setupPropsKey),
 								tsModule.createIdentifier(propertyName),
@@ -48,6 +49,11 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 							dependents.push(propertyName);
 							return tsModule.createIdentifier(propertyName);
 						} else {
+							if (propertyName === '$emit') {
+								setupKeys.add('emit');
+							}
+
+							// emit
 							const convertKey = convertContextKey(propertyName);
 							if (convertKey) {
 								return tsModule.createIdentifier(convertKey);

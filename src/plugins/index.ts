@@ -67,6 +67,14 @@ export function getDecoratorArgumentExpr(tsModule: typeof ts, node: ts.Node): ts
 	return undefined;
 }
 
+export interface Clause {
+	named: Set<string>;
+	default?: string;
+}
+
+const importMap = new Map<string, Clause>();
+export const setupKeys = new Set<string>();
+
 export function getASTResults(
 	node: ts.ClassDeclaration,
 	options: Vc2cOptions,
@@ -96,7 +104,6 @@ export function getASTResults(
 						}
 						if (!converted) {
 							astResults.push(convertNodeToASTResult(tsModule, property));
-							console.log('🚀 ~ file: index.ts:115 ~ objExpr.forEachChild ~ property:', property);
 						}
 					}
 				});
@@ -144,6 +151,58 @@ export function convertASTResultToSetupFn(
 		false,
 	);
 
+	const emitNode = tsModule.createObjectBindingPattern([
+		tsModule.createBindingElement(undefined, undefined, tsModule.createIdentifier('emit'), undefined),
+	]);
+
+	const getSetupParams = () => {
+		if (setupKeys.has('emit') && setupKeys.has('props')) {
+			return [
+				tsModule.createParameter(
+					undefined,
+					undefined,
+					undefined,
+					tsModule.createIdentifier(options.setupPropsKey),
+					undefined,
+					undefined,
+					undefined,
+				),
+				tsModule.createParameter(undefined, undefined, undefined, emitNode, undefined, undefined, undefined),
+			];
+		}
+
+		if (!setupKeys.has('emit') && setupKeys.has('props')) {
+			return [
+				tsModule.createParameter(
+					undefined,
+					undefined,
+					undefined,
+					tsModule.createIdentifier(options.setupPropsKey),
+					undefined,
+					undefined,
+					undefined,
+				),
+			];
+		}
+
+		if (setupKeys.has('emit') && !setupKeys.has('props')) {
+			return [
+				tsModule.createParameter(
+					undefined,
+					undefined,
+					undefined,
+					tsModule.createIdentifier('_'),
+					undefined,
+					undefined,
+					undefined,
+				),
+				tsModule.createParameter(undefined, undefined, undefined, emitNode, undefined, undefined, undefined),
+			];
+		}
+
+		return [];
+	};
+
 	return tsModule.createMethod(
 		undefined,
 		undefined,
@@ -151,26 +210,7 @@ export function convertASTResultToSetupFn(
 		tsModule.createIdentifier('setup'),
 		undefined,
 		undefined,
-		[
-			tsModule.createParameter(
-				undefined,
-				undefined,
-				undefined,
-				tsModule.createIdentifier(options.setupPropsKey),
-				undefined,
-				undefined,
-				undefined,
-			),
-			tsModule.createParameter(
-				undefined,
-				undefined,
-				undefined,
-				tsModule.createIdentifier(options.setupContextKey),
-				undefined,
-				undefined,
-				undefined,
-			),
-		],
+		getSetupParams(),
 		undefined,
 		tsModule.createBlock(
 			[
@@ -185,14 +225,8 @@ export function convertASTResultToSetupFn(
 	);
 }
 
-export interface Clause {
-	named: Set<string>;
-	default?: string;
-}
-
-const importMap = new Map<string, Clause>();
-
 export const clearImport = () => importMap.clear();
+export const clearSetupKeys = () => setupKeys.clear();
 
 export const addImport = (key: string, value: string) => {
 	if (!importMap.has(key)) {
