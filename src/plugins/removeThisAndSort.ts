@@ -88,8 +88,9 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 						}
 					}
 
-					if (node.expression.kind === tsModule.SyntaxKind.PropertyAccessExpression) {
+					if (tsModule.isPropertyAccessExpression(node.expression) && node.expression.name.getText() === '$refs') {
 						const propertyName = node.name.getText();
+
 						if (refVariables.includes(propertyName)) {
 							dependents.push(propertyName);
 							return tsModule.createPropertyAccess(
@@ -116,7 +117,6 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 		}
 		dependents = [];
 
-		console.log('🚀 ~ file: removeThisAndSort.ts:92 ~ transformResults ~ astResult.nodes:', astResult);
 		const nodes = tsModule.transform(astResult.nodes, [transformer()], { module: tsModule.ModuleKind.ESNext })
 			.transformed;
 
@@ -131,7 +131,7 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 
 	const astResultNoDependents = transformResults.filter((el) => el.nodeDependents.length === 0);
 	let otherASTResults = transformResults.filter((el) => el.nodeDependents.length !== 0);
-	console.log('🚀 ~ file: removeThisAndSort.ts:105 ~ otherASTResults:', otherASTResults);
+
 	let result: ASTResult<ts.Node>[] = [...astResultNoDependents];
 	const resultHaveDependents = astResultNoDependents
 		.map((el) => el.attributes)

@@ -31,8 +31,19 @@ export default class Notification extends Vue {
     @Prop({ type: Boolean, required: true })
 	public value: boolean;
 
+	private readonly segmentsService = inject(SegmentsService);
+	private readonly languagesStore = inject(LanguagesStore);
+
 	get cancelButtonText() {
 		return this.cancelButton ? this.cancelButton : (this.$t('Cancel') as string);
+	}
+
+	get isTargetLanguageRTL() {
+		return this.languagesStore.isTargetLanguageRTL;
+	}
+
+	get disabled() {
+		return !this.segmentsService.canEditActiveSegment;
 	}
 
 	isShownResults = true
