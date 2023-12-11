@@ -35,7 +35,7 @@ export default class Notification extends Vue {
 	private readonly languagesStore = inject(LanguagesStore);
 
 	get cancelButtonText() {
-		return this.cancelButton ? this.cancelButton : (this.$t('Cancel') as string);
+		return this.value ? this.value : (this.$t('Cancel') as string);
 	}
 
 	get isTargetLanguageRTL() {
