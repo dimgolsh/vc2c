@@ -4,10 +4,10 @@
    
 The vc2c project can convert vue class APIs to vue composition APIs in Vue.js components written in Typescript.  
 
-[Demo](https://yoyo930021.github.io/vc2c/)
+[Demo](https://dimgolsh.github.io/vc2c/)
 
 ## Introduction
-![](https://github.com/yoyo930021/vc2c/blob/master/doc/flow.png)
+![](https://github.com/dimgolsh/vc2c/blob/master/doc/flow.png)
 
 ASTConvertPlugins is the most important part of this project, it can convert AST to composition APIs.  
 Custom decorator in ASTConvertPlugins are supported, such as `@Subscription`.  
@@ -52,6 +52,13 @@ The files to be converted must meet the criterias below:
   - [x] `@Ref`
 - [x] replace `this` to `props`, `variable`, or `context`.
 - [x] sort by dependency.
+
+
+### Add for SC company
+- [x] add `variable` from `$refs`.
+- [x] add `useI18n` from `$t`.
+- [x] add `PropType<Type>` for `props`.
+- [x] check and `(props, {emit})` from `setup`.
 
 
 ## Usage
