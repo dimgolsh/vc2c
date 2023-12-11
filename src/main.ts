@@ -59,9 +59,9 @@ export default class Notification extends Vue {
 	created() {
 	
 		this.$watch(
-			() => this.labels,
+			() => this.tqs,
 			(value) => {
-				this.$emit('labels-changed', value);
+				this.$emit('tqs-changed', value);
 			},
 		);
 	}

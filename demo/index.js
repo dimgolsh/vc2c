@@ -1,58 +1,72 @@
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.main.js'
 import { convert } from '../src/index'
 
-const defaultCode = `import Vue from 'vue'
-import { Prop, Component, Ref, Model, Provide, Inject } from 'vue-property-decorator'
+const defaultCode = `import { Component, Vue } from 'common/vue';
+import i18n from './i18n';
+import { inject } from 'common/di';
+import { INotificationModel } from '@/services/notifications';
+import { ScText } from '@smartcat/design-system';
 
-const symbol = Symbol('baz')
+@Component({ i18n, components: { NotificationTemplate, MdButton } })
+export default class Notification extends Vue {
+	@Prop({ type: Object, required: true })
+	public value: INotificationModel;
 
-/**
- * My basic tag
- */
-@Component({
-  name: 'oao',
-  props: ['bar', 'qaq', 'cac'],
-  data () {
-    const a = 'pa';
-    return {
-      a: a
-    }
-  }
-})
-export default class BasicPropertyClass extends Vue {
-  @Ref() readonly anotherComponent!: HTMLElement
-  @Model('change', { type: Boolean }) readonly checked!: boolean
-  /**
-   * My foo
-   */
-  @Prop({ type: Boolean, default: false }) foo: any
+    @Prop(Array)
+	errors: IQAErrorModel[];
 
-  @Provide() foa = 'foo'
-  @Provide('bar') baz = 'bar'
+    @Prop({ type: Array, required: true })
+	tqs: IQAErrorModel[];
 
-  @Inject() readonly foai!: string
-  @Inject('bar') readonly bari!: string
-  @Inject({ from: 'optional', default: 'default' }) readonly optional!: string
-  @Inject(symbol) readonly bazi!: string
+    @Prop({ type: Boolean, required: true })
+	public value: boolean;
 
-  /**
-   * My msg
-   */
-  msg = 'Vetur means "Winter" in icelandic.' //foo
+	private readonly segmentsService = inject(SegmentsService);
+	private readonly languagesStore = inject(LanguagesStore);
 
-  /**
-   * My count
-   */
-  get count () {
-    return this.$store.state.count
-  }
+	get cancelButtonText() {
+		return this.cancelButton ? this.cancelButton : (this.$t('Cancel') as string);
+	}
 
-  /**
-   * My greeting
-   */
-  hello () {
-    console.log(this.msg)
-  }
+	get isTargetLanguageRTL() {
+		return this.languagesStore.isTargetLanguageRTL;
+	}
+
+	get disabled() {
+		return !this.segmentsService.canEditActiveSegment;
+	}
+
+	isShownResults = true
+
+	mounted() {
+		this.$nextTick();
+		(this.$refs.inputLabel as HTMLElement).focus();
+		const { y, height } = (this.$refs.labelbutton as HTMLElement).getBoundingClientRect();
+		const layout = document.getElementById('layout-top-left-container').clientHeight;
+	}
+
+
+	created() {
+	
+		this.$watch(
+			() => this.tqs,
+			(value) => {
+				this.$emit('tqs-changed', value);
+			},
+		);
+	}
+
+	public get hasOkButton() {
+		return Boolean(this.value?.okText);
+	}
+
+	public get hasCancelButton() {
+		return Boolean(this.value?.cancelText);
+	}
+
+	public close(value: boolean) {
+		this.$emit('close', value);
+	}
 }`
 
 self.MonacoEnvironment = {
