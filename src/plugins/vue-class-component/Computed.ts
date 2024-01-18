@@ -67,7 +67,6 @@ export const convertSetter: ASTConverter<ts.SetAccessorDeclaration> = (node, opt
 };
 
 export const mergeComputed: ASTTransform = (astResults, options) => {
-	console.log(astResults);
 	const tsModule = options.typescript;
 	const getterASTResults = astResults.filter((el) => el.tag === 'Computed-getter');
 	const setterASTResults = astResults.filter((el) => el.tag === 'Computed-setter');

@@ -3,7 +3,6 @@ import type ts from 'typescript';
 import { convertI18nKey } from '../utils';
 
 export const addI18nCompos: ASTTransform = (astResults, options) => {
-	console.log('before', astResults);
 	const ts = options.typescript;
 	const tsModule = options.typescript;
 	const dependent = new Set();

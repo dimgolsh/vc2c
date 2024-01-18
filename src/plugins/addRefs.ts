@@ -2,7 +2,6 @@ import { ASTTransform, ReferenceKind, ASTResultKind, ASTResult } from './types';
 import type ts from 'typescript';
 
 export const addRefs: ASTTransform = (astResults, options) => {
-	console.log('before', astResults);
 	const ts = options.typescript;
 	const tsModule = options.typescript;
 	const dependent = new Set();
@@ -40,8 +39,6 @@ export const addRefs: ASTTransform = (astResults, options) => {
 	if (dependent.size === 0) {
 		return astResults;
 	}
-
-	console.log('🚀 ~ file: addRefs.ts:41 ~ dependent:', dependent);
 
 	const patterns: ASTResult<ts.Node>[] = [];
 

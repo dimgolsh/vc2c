@@ -152,6 +152,5 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 			break;
 		}
 	} while (result.length < astResults.length);
-	console.log('🚀 ~ file: removeThisAndSort.ts:144 ~ result:', result);
 	return result;
 };

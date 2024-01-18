@@ -61,7 +61,6 @@ const getArguments = (
 	// tqs: IQAErrorModel[];
 	if (node.type?.kind === ts.SyntaxKind.ArrayType && !propArguments.properties) {
 		const typeName = (node.type as ts.ArrayTypeNode).elementType;
-		console.log('🚀 ~ file: Prop.ts:52 ~ node.type:', node.type);
 
 		return ts.createObjectLiteral([
 			ts.createPropertyAssignment(

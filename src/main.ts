@@ -9,7 +9,6 @@ import * as monaco from 'monaco-editor';
 
 import { ScriptTarget } from 'typescript';
 import { Vc2cOptions } from './options';
-console.log(1);
 
 const defaultCode = `import { Component, Vue } from 'common/vue';
 import i18n from './i18n';
@@ -84,7 +83,7 @@ const vc2cConfig = {
 	debug: true,
 };
 
-function init(code: string, options: Partial<Vc2cOptions>) {
+async function init(code: string, options: Partial<Vc2cOptions>) {
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore
 	self.MonacoEnvironment = {
@@ -124,7 +123,7 @@ function init(code: string, options: Partial<Vc2cOptions>) {
 	});
 
 	const output = monaco.editor.create(document.getElementById('output')!, {
-		value: convert(code, options),
+		value: await convert(code, options),
 		language: 'typescript',
 		theme: 'vs-dark',
 		minimap: {
@@ -132,14 +131,18 @@ function init(code: string, options: Partial<Vc2cOptions>) {
 		},
 	});
 
-	const setOutput = () => {
+	const setOutput = async () => {
 		try {
-			output.setValue(convert(editor.getValue(), options));
+			output.setValue(await convert(editor.getValue(), options));
 			// eslint-disable-next-line no-empty
 		} catch (error) {}
 	};
 	editor.onDidChangeModelContent(() => {
-		setOutput();
+		setOutput()
+			.then((res) => res)
+			.catch(() => {
+				console.error('');
+			});
 	});
 
 	window.addEventListener('resize', () => {

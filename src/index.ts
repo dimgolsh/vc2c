@@ -4,20 +4,25 @@ import { InputVc2cOptions, getDefaultVc2cOptions, mergeVc2cOptions } from './opt
 import { format } from './format';
 import path from 'path';
 import { readVueSFCOrTsFile, existsFileSync, FileInfo } from './file';
-import { setDebugMode } from './debug';
+import { log, setDebugMode } from './debug';
 import * as BuiltInPlugins from './plugins/builtIn';
 import { clearImport, clearSetupKeys } from './plugins';
 
-export function convert(content: string, inputOptions: InputVc2cOptions): string {
+export function convert(content: string, inputOptions: InputVc2cOptions): Promise<string> {
 	clearImport();
 	clearSetupKeys();
 	const options = mergeVc2cOptions(getDefaultVc2cOptions(inputOptions.typescript), inputOptions);
 	const { ast, program } = getSingleFileProgram(content, options);
+	const result = convertAST(ast, options, program);
 
-	return format(convertAST(ast, options, program), options);
+	return (format(result, options) as unknown) as Promise<string>;
 }
 
-export function convertFile(filePath: string, root: string, config: string): { file: FileInfo; result: string } {
+export async function convertFile(
+	filePath: string,
+	root: string,
+	config: string,
+): Promise<{ file: FileInfo; result: string }> {
 	root = typeof root === 'string' ? (path.isAbsolute(root) ? root : path.resolve(process.cwd(), root)) : process.cwd();
 	config = typeof config === 'string' ? config : '.vc2c.js';
 	if (config.endsWith('.ts')) {
@@ -35,9 +40,12 @@ export function convertFile(filePath: string, root: string, config: string): { f
 	}
 
 	const file = readVueSFCOrTsFile(filePath, options);
+
+	const convered = await convert(file.content, options);
+	log('Write file.....');
 	return {
 		file,
-		result: convert(file.content, options),
+		result: convered,
 	};
 }
 
