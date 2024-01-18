@@ -2,10 +2,10 @@ import program from 'commander';
 import { convertFile } from './index.js';
 import inquirer from 'inquirer';
 import { writeFileInfo } from './file';
+import cliProgress from 'cli-progress';
 
-import { readdir } from 'fs/promises';
 import path from 'path';
-import { PathLike, readdirSync, lstatSync } from 'fs';
+import { readdirSync, lstatSync } from 'fs';
 
 function findInDir(dir: string, fileList: string[] = []) {
 	const files = readdirSync(dir);
@@ -24,22 +24,6 @@ function findInDir(dir: string, fileList: string[] = []) {
 
 	return fileList;
 }
-
-const findByExtension = async (dir: PathLike, filelist = []) => {
-	const matchedFiles = [];
-
-	const files = await readdir(dir);
-
-	for (const file of files) {
-		const fileExt = path.extname(file);
-
-		if (fileExt === '.vue') {
-			matchedFiles.push(file);
-		}
-	}
-
-	return matchedFiles;
-};
 
 function camelize(str: string) {
 	return str.replace(/-(\w)/g, (_, c: string) => (c ? c.toUpperCase() : ''));
@@ -104,26 +88,33 @@ program
 program
 	.command('folder <filePath>')
 	.description('convert folder - vue component file from class to composition api')
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	.action(async (filePath: string, cmd) => {
 		const cmdOptions = getCmdOptions(cmd);
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 		const files = findInDir(filePath);
-		console.log('🚀 ~ .action ~ files:', files.length);
 
-		const resultAll = { ok: 0, err: 0 };
+		const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
+
+		bar1.start(files.length, 0);
+
+		const resultAll = { success: 0, err: 0 };
+		let value = 0;
 
 		for await (const fileP of files) {
+			value++;
 			try {
 				const { file, result } = await convertFile(fileP, cmdOptions.root as string, cmdOptions.config as string);
 				writeFileInfo(file, result);
-				resultAll.ok += 1;
+
+				resultAll.success += 1;
 			} catch (err) {
 				resultAll.err += 1;
 			}
+
+			bar1.update(value);
 		}
 
+		bar1.stop();
 		console.log(resultAll);
 		console.log('Please check the TODO comments on result.');
 	});
