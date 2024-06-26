@@ -13,7 +13,8 @@ export enum ReferenceKind {
   VARIABLE,
   CONTEXT,
   NONE,
-  I18n
+  I18n,
+  Route
 }
 
 export type ImportModule = {

@@ -24,6 +24,7 @@ import { convertProvide } from './vue-property-decorator/Provide';
 import { addI18nCompos } from './addI18nCompos';
 import { addRefs } from './addRefs';
 import { convertComponents } from './vue-class-component/object/Components';
+import { addRoutesCompos } from './addRoutesCompos';
 
 export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 	return {
@@ -53,7 +54,7 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 			convertEmitMethod,
 			convertMethod,
 		],
-		after: [mergeName, mergeProps, mergeComputed, addRefs, addI18nCompos, removeThisAndSort],
+		after: [mergeName, mergeProps, mergeComputed, addRefs, addI18nCompos, addRoutesCompos, removeThisAndSort],
 	};
 }
 
@@ -112,7 +113,7 @@ export function getASTResults(
 			if (child.kind in converterPlugins) {
 				const converters = ((converterPlugins as unknown) as { [index: number]: Array<ASTConverter<ts.Node>> })[
 					child.kind
-				];
+					];
 				for (const converter of converters) {
 					const result = converter(child, options, program);
 					if (result) {

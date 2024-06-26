@@ -44,6 +44,19 @@ export default class Notification extends Vue {
 	get disabled() {
 		return !this.segmentsService.canEditActiveSegment;
 	}
+	
+	get isEditTeamPage() {
+		return this.$route.name === 'TeamManagement';
+	}
+	
+	public editTeam() {
+		if (!this.isEditTeamPage) {
+			this.$router.push({
+				name: 'TeamManagement',
+				query: { backUrl: this.isEditTeamPage ? this.$route.query.backUrl : this.$route.path },
+			});
+		}
+	}
 
 	isShownResults = true
 

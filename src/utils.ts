@@ -156,6 +156,15 @@ export const convertI18nKey = (key: string) => {
 	return contextKey.get(key);
 };
 
+export const convertRoutesKey = (key: string) => {
+	const contextKey = new Map([
+		['$router', 'router'],
+		['$route', 'route'],
+	]);
+
+	return contextKey.get(key);
+};
+
 export const convertContextKey = (key: string) => {
 	const contextKey = new Map([
 		['$attrs', 'attrs'],
@@ -173,6 +182,8 @@ export const convertContextWithImport = (key: string) => {
 		['$watch', { key: 'watch', import: { key: 'vue', path: 'watch' } }],
 		['$slots', { key: 'slots', import: { key: 'vue', path: 'useSlots' } }],
 		['$nextTick', { key: 'nextTick', import: { key: 'vue', path: 'nextTick' } }],
+		['$route', { key: 'route', import: { key: 'vue-router/composables', path: 'useRoute' } }],
+		['$router', { key: 'router', import: { key: 'vue-router/composables', path: 'useRouter' } }],
 	]);
 
 	return contextKey.get(key);
