@@ -73,6 +73,11 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 								return tsModule.createIdentifier(convertWithImport.key);
 							}
 
+							//$v
+							if (propertyName === '$v') {
+								return tsModule.createIdentifier('$v.value');
+							}
+
 							return addTodoComment(
 								tsModule,
 								tsModule.createPropertyAccess(

@@ -25,6 +25,7 @@ import { addI18nCompos } from './addI18nCompos';
 import { addRefs } from './addRefs';
 import { convertComponents } from './vue-class-component/object/Components';
 import { addRoutesCompos } from './addRoutesCompos';
+import { convertValidate, mergeValidate } from './vue-property-decorator/Validate';
 
 export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 	return {
@@ -39,11 +40,13 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 		],
 		[tsModule.SyntaxKind.PropertyDeclaration]: [
 			convertModel,
+			convertValidate,
 			convertProp,
 			convertDomRef,
 			convertProvide,
 			convertInject,
 			convertData,
+
 		],
 		[tsModule.SyntaxKind.GetAccessor]: [convertGetter],
 		[tsModule.SyntaxKind.SetAccessor]: [convertSetter],
@@ -54,7 +57,7 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 			convertEmitMethod,
 			convertMethod,
 		],
-		after: [mergeName, mergeProps, mergeComputed, addRefs, addI18nCompos, addRoutesCompos, removeThisAndSort],
+		after: [mergeName, mergeProps, mergeValidate, mergeComputed, addRefs, addI18nCompos, addRoutesCompos, removeThisAndSort],
 	};
 }
 

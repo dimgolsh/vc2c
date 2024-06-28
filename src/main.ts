@@ -21,14 +21,27 @@ export default class Notification extends Vue {
 	@Prop({ type: Object, required: true })
 	public value: INotificationModel;
 
-    @Prop(Array)
+	@Prop(Array)
 	errors: IQAErrorModel[];
 
-    @Prop({ type: Array, required: true })
+	@Prop({ type: Array, required: true })
 	tqs: IQAErrorModel[];
 
-    @Prop({ type: Boolean, required: true })
-	public value: boolean;
+	@Prop({ type: Boolean, required: true })
+	public valueB: boolean;
+	
+	
+	@Validate({
+		required: true,
+		email: true,
+		custom: (_: any, self: RestorePasswordPage) => self.emailExists,
+	})
+	public email: string = null;
+	
+	@Validate({
+		required: 'trim',
+	})
+	public legalName: string = null;
 
 	private readonly segmentsService = inject(SegmentsService);
 	private readonly languagesStore = inject(LanguagesStore);
@@ -50,6 +63,10 @@ export default class Notification extends Vue {
 	}
 	
 	public editTeam() {
+		this.$v.touch();
+		if (this.$v.invalid) {
+			return
+		}
 		if (!this.isEditTeamPage) {
 			this.$router.push({
 				name: 'TeamManagement',

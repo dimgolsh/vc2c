@@ -14,7 +14,8 @@ export enum ReferenceKind {
   CONTEXT,
   NONE,
   I18n,
-  Route
+  Route,
+  Validate
 }
 
 export type ImportModule = {
