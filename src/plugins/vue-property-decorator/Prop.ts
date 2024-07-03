@@ -8,6 +8,10 @@ const getArguments = (
 	node: ts.PropertyDeclaration,
 	propArguments: ts.ObjectLiteralExpression,
 ): ts.ObjectLiteralExpression => {
+	// 	@Prop()
+	//   public order: IOrderModel;
+	// TODO: Create
+
 	// @Prop({ type: Object, required: true })
 	// public value: INotificationModel;
 	if (node.type?.kind === ts.SyntaxKind.TypeReference) {

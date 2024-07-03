@@ -44,6 +44,10 @@ export default class Notification extends Popup<IInvoiceModel> {
 		required: 'trim',
 	})
 	public legalName: string = null;
+	
+	
+	public currency = Currency;
+	public files: IFileModel[] = null;
 
 	private readonly segmentsService = inject(SegmentsService);
 	private readonly languagesStore = inject(LanguagesStore);
