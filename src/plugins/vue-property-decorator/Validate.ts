@@ -24,7 +24,6 @@ export const convertValidate: ASTConverter<ts.PropertyDeclaration> = (node, opti
 
 	const decorator = node.decorators.find((el) => (el.expression as ts.CallExpression).expression.getText() === modelDecoratorName);
 	if (decorator) {
-
 		const tsModule = options.typescript;
 		// email
 		const name = node.name.getText();
@@ -41,23 +40,6 @@ export const convertValidate: ASTConverter<ts.PropertyDeclaration> = (node, opti
 				reference: ReferenceKind.Validate,
 				attributes: [node.name.getText()],
 				nodes: [
-					// copySyntheticComments(
-					// 	tsModule,
-					// 	tsModule.createPropertyAssignment(
-					// 		tsModule.createIdentifier('model'),
-					// 		tsModule.createObjectLiteral(
-					// 			[tsModule.createPropertyAssignment(
-					// 				tsModule.createIdentifier('prop'),
-					// 				tsModule.createStringLiteral(node.name.getText()),
-					// 			), tsModule.createPropertyAssignment(
-					// 				tsModule.createIdentifier('event'),
-					// 				tsModule.createStringLiteral(eventName),
-					// 			)],
-					// 			true,
-					// 		),
-					// 	),
-					// 	node,
-					// ),
 					tsModule.createPropertyAssignment(
 						tsModule.createIdentifier(name),
 						tsModule.createObjectLiteral(properties, true),
@@ -69,7 +51,6 @@ export const convertValidate: ASTConverter<ts.PropertyDeclaration> = (node, opti
 				] as ts.PropertyAssignment[],
 			};
 
-			console.log(res);
 			return res;
 		}
 	}

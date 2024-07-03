@@ -26,6 +26,7 @@ import { addRefs } from './addRefs';
 import { convertComponents } from './vue-class-component/object/Components';
 import { addRoutesCompos } from './addRoutesCompos';
 import { convertValidate, mergeValidate } from './vue-property-decorator/Validate';
+import { convertExtends } from './vue-class-component/Extends';
 
 export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 	return {
@@ -36,7 +37,7 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 		},
 		[tsModule.SyntaxKind.Identifier]: [convertName],
 		[tsModule.SyntaxKind.HeritageClause]: [
-			// TODO: extends Minix
+			convertExtends
 		],
 		[tsModule.SyntaxKind.PropertyDeclaration]: [
 			convertModel,

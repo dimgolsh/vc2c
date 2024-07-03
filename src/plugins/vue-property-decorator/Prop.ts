@@ -83,7 +83,6 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 		return false;
 	}
 
-
 	const decorator = node.decorators.find(
 		(el) => (el.expression as ts.CallExpression).expression.getText() === propDecoratorName,
 	);
@@ -108,11 +107,11 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 
 			const imports = hasType
 				? [
-						{
-							named: ['PropType'],
-							external: 'vue',
-						},
-				  ]
+					{
+						named: ['PropType'],
+						external: 'vue',
+					},
+				]
 				: [];
 
 			return {
@@ -133,8 +132,6 @@ export const mergeProps: ASTTransform = (astResults, options) => {
 	const propTags = ['Prop', 'Model'];
 
 	const propASTResults = astResults.filter((el) => propTags.includes(el.tag));
-
-	console.log(propASTResults);
 
 	const otherASTResults = astResults.filter((el) => !propTags.includes(el.tag));
 	const modelASTResult = astResults.find((el) => el.tag === 'Model');
@@ -163,11 +160,11 @@ export const mergeProps: ASTTransform = (astResults, options) => {
 	return [
 		...(modelASTResult
 			? [
-					{
-						...modelASTResult,
-						nodes: modelASTResult.nodes.slice(0, 1) as ts.PropertyAssignment[],
-					},
-			  ]
+				{
+					...modelASTResult,
+					nodes: modelASTResult.nodes.slice(0, 1) as ts.PropertyAssignment[],
+				},
+			]
 			: []),
 		mergeASTResult,
 		...otherASTResults,

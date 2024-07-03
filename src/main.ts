@@ -15,9 +15,11 @@ import i18n from './i18n';
 import { inject } from 'common/di';
 import { INotificationModel } from '@/services/notifications';
 import { ScText } from '@smartcat/design-system';
+import { Popup } from 'common/popup/types';
+import { IInvoiceModel } from 'api/portal/payments';
 
 @Component({ i18n, components: { NotificationTemplate, MdButton } })
-export default class Notification extends Vue {
+export default class Notification extends Popup<IInvoiceModel> {
 	@Prop({ type: Object, required: true })
 	public value: INotificationModel;
 
