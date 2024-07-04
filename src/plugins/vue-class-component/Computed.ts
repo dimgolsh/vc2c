@@ -1,44 +1,51 @@
 import { ASTConverter, ASTResultKind, ASTTransform, ASTResult, ReferenceKind } from '../types';
 import type ts from 'typescript';
 import { copySyntheticComments } from '../../utils';
+import { validateGet } from '../vue-property-decorator/Validate';
 
 export const convertGetter: ASTConverter<ts.GetAccessorDeclaration> = (node, options) => {
 	const tsModule = options.typescript;
 	const computedName = node.name.getText();
 
-	return {
-		tag: 'Computed-getter',
-		kind: ASTResultKind.COMPOSITION,
-		imports: [
-			{
-				named: ['computed'],
-				external: options.compatible ? '@vue/composition-api' : 'vue',
-			},
-		],
-		reference: ReferenceKind.VARIABLE,
-		attributes: [computedName],
-		nodes: [
-			copySyntheticComments(
-				tsModule,
-				tsModule.createArrowFunction(
-					undefined,
-					undefined,
-					[],
-					undefined,
-					tsModule.createToken(tsModule.SyntaxKind.EqualsGreaterThanToken),
-					node.body ?? tsModule.createBlock([]),
+	const validate = validateGet(node, options);
+
+	return [
+		...(validate || []),
+		{
+			tag: 'Computed-getter',
+			kind: ASTResultKind.COMPOSITION,
+			imports: [
+				{
+					named: ['computed'],
+					external: 'vue',
+				},
+			],
+			reference: ReferenceKind.VARIABLE,
+			attributes: [computedName],
+			nodes: [
+				copySyntheticComments(
+					tsModule,
+					tsModule.createArrowFunction(
+						undefined,
+						undefined,
+						[],
+						undefined,
+						tsModule.createToken(tsModule.SyntaxKind.EqualsGreaterThanToken),
+						node.body ?? tsModule.createBlock([]),
+					),
+					node,
 				),
-				node,
-			),
-		],
-	};
+			],
+		},
+
+	];
 };
 
 export const convertSetter: ASTConverter<ts.SetAccessorDeclaration> = (node, options) => {
 	const tsModule = options.typescript;
 	const computedName = node.name.getText();
 
-	return {
+	return [{
 		tag: 'Computed-setter',
 		kind: ASTResultKind.COMPOSITION,
 		imports: [
@@ -63,7 +70,7 @@ export const convertSetter: ASTConverter<ts.SetAccessorDeclaration> = (node, opt
 				node,
 			),
 		],
-	};
+	}];
 };
 
 export const mergeComputed: ASTTransform = (astResults, options) => {
@@ -92,22 +99,22 @@ export const mergeComputed: ASTTransform = (astResults, options) => {
 						tsModule.createCall(tsModule.createIdentifier('computed'), undefined, [
 							setter
 								? tsModule.createObjectLiteral(
-										[
-											tsModule.createPropertyAssignment(
-												tsModule.createIdentifier('get'),
-												getter.nodes[0] as ts.Expression,
-											),
-											tsModule.createPropertyAssignment(
-												tsModule.createIdentifier('set'),
-												setter.nodes[0] as ts.Expression,
-											),
-										],
-										true,
-								  )
+									[
+										tsModule.createPropertyAssignment(
+											tsModule.createIdentifier('get'),
+											getter.nodes[0] as ts.Expression,
+										),
+										tsModule.createPropertyAssignment(
+											tsModule.createIdentifier('set'),
+											setter.nodes[0] as ts.Expression,
+										),
+									],
+									true,
+								)
 								: (tsModule.setSyntheticTrailingComments(
-										tsModule.setSyntheticLeadingComments(getter.nodes[0], undefined),
-										undefined,
-								  ) as ts.Expression),
+									tsModule.setSyntheticLeadingComments(getter.nodes[0], undefined),
+									undefined,
+								) as ts.Expression),
 						]),
 					),
 				],
@@ -130,9 +137,9 @@ export const mergeComputed: ASTTransform = (astResults, options) => {
 				setter
 					? resultNode
 					: tsModule.setSyntheticTrailingComments(
-							tsModule.setSyntheticLeadingComments(resultNode, leadingComments),
-							trailingComments,
-					  ),
+						tsModule.setSyntheticLeadingComments(resultNode, leadingComments),
+						trailingComments,
+					),
 			] as ts.Statement[],
 		});
 	});

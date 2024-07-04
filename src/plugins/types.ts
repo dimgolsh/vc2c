@@ -48,7 +48,7 @@ export interface ASTResultToComposition<N = ts.Statement> extends ASTResultBase 
 
 export type ASTResult<N> = ASTResultToObject<N> | ASTResultToComposition<N>
 
-export type ASTConverter<T extends ts.Node> = (node: T, options: Vc2cOptions, program: ts.Program) => ASTResult<ts.Node> | false
+export type ASTConverter<T extends ts.Node> = (node: T, options: Vc2cOptions, program?: ts.Program) => ASTResult<ts.Node>[] | false
 
 export type ASTTransform = (astResults: Array<ASTResult<ts.Node>>, options: Vc2cOptions, program: ts.Program) => Array<ASTResult<ts.Node>>
 

@@ -15,7 +15,7 @@ export const convertDomRef: ASTConverter<ts.PropertyDeclaration> = (node, option
 		const tsModule = options.typescript;
 		const refName = node.name.getText();
 
-		return {
+		return [{
 			tag: 'DomRef',
 			kind: ASTResultKind.COMPOSITION,
 			imports: [
@@ -47,7 +47,7 @@ export const convertDomRef: ASTConverter<ts.PropertyDeclaration> = (node, option
 					node,
 				),
 			],
-		};
+		}];
 	}
 
 	return false;

@@ -3,7 +3,7 @@ import type ts from 'typescript'
 
 export const convertName: ASTConverter<ts.Identifier> = (node, options) => {
   const tsModule = options.typescript
-  return {
+  return [{
     tag: 'Class-Name',
     kind: ASTResultKind.OBJECT,
     imports: [],
@@ -15,7 +15,7 @@ export const convertName: ASTConverter<ts.Identifier> = (node, options) => {
         tsModule.createStringLiteral(node.getText())
       )
     ]
-  }
+  }]
 }
 
 export const mergeName: ASTTransform = (astResults) => {

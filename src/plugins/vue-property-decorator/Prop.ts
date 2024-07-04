@@ -118,14 +118,14 @@ export const convertProp: ASTConverter<ts.PropertyDeclaration> = (node, options)
 				]
 				: [];
 
-			return {
+			return [{
 				tag: 'Prop',
 				kind: ASTResultKind.OBJECT,
 				imports,
 				reference: ReferenceKind.PROPS,
 				attributes: [propName],
 				nodes: [nodeRes],
-			};
+			}];
 		}
 	}
 

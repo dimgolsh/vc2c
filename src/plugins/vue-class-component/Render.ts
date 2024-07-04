@@ -5,7 +5,7 @@ export const convertRender: ASTConverter<ts.MethodDeclaration> = (node) => {
   if (node.name.getText() !== 'render') {
     return false
   }
-  return {
+  return [{
     tag: 'Render',
     kind: ASTResultKind.OBJECT,
     imports: [],
@@ -14,5 +14,5 @@ export const convertRender: ASTConverter<ts.MethodDeclaration> = (node) => {
     nodes: [
       node
     ]
-  }
+  }]
 }

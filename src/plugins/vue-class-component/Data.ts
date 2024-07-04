@@ -9,7 +9,7 @@ export const convertData: ASTConverter<ts.PropertyDeclaration> = (node, options,
 	const tsModule = options.typescript;
 	const dataName = node.name.getText();
 
-	const checker = program.getTypeChecker();
+	const checker = program!.getTypeChecker();
 	const isRef = isPrimitiveType(tsModule, checker.getTypeAtLocation(node.initializer));
 
 	const tag = isRef ? 'Data-ref' : 'Data-reactive';
@@ -18,7 +18,7 @@ export const convertData: ASTConverter<ts.PropertyDeclaration> = (node, options,
 	const callExpr =
 		tsModule.createCall(tsModule.createIdentifier(isRef ? 'ref' : 'reactive'), node.type ? [node.type] : undefined, [removeComments(tsModule, node.initializer)]);
 
-	return {
+	return [{
 		tag,
 		kind: ASTResultKind.COMPOSITION,
 		imports: [
@@ -42,5 +42,5 @@ export const convertData: ASTConverter<ts.PropertyDeclaration> = (node, options,
 				node,
 			),
 		] as ts.Statement[],
-	};
+	}];
 };

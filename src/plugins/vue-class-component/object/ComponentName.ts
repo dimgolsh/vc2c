@@ -3,7 +3,7 @@ import type ts from 'typescript'
 
 export const convertObjName: ASTConverter<ts.PropertyAssignment> = (node) => {
   if (node.name.getText() === 'name') {
-    return {
+    return [{
       tag: 'Obj-Name',
       kind: ASTResultKind.OBJECT,
       imports: [],
@@ -12,7 +12,7 @@ export const convertObjName: ASTConverter<ts.PropertyAssignment> = (node) => {
       nodes: [
         node
       ] as ts.PropertyAssignment[]
-    }
+    }]
   }
 
   return false

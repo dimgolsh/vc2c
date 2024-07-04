@@ -54,6 +54,21 @@ export default class Notification extends Popup<IInvoiceModel> {
 
 	private readonly segmentsService = inject(SegmentsService);
 	private readonly languagesStore = inject(LanguagesStore);
+	
+	@Validate({ required: true })
+	get selectedLanguagesTo() {
+		return this.languagesStore.isTargetLanguageRTL;
+	}
+	
+	@Validate({ required: true })
+	get selectedLanguageFrom() {
+		return this.languagesStore.isTargetLanguageRTL;
+	}
+
+	set selectedLanguageFrom() {
+		this.$v.selectedLanguageFrom.$touch();
+		this.$emit('on-data-change');
+	}
 
 	get cancelButtonText() {
 		return this.value ? this.value : (this.$t('Cancel') as string);

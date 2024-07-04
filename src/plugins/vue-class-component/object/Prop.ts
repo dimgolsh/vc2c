@@ -16,14 +16,14 @@ export const convertObjProps: ASTConverter<ts.PropertyAssignment> = (node, optio
 					.map((el) => tsModule.createPropertyAssignment((el as ts.StringLiteral).text, tsModule.createNull()))
 			: (node.initializer as ts.ObjectLiteralExpression).properties.map((el) => el as ts.PropertyAssignment);
 
-		return {
+		return [{
 			tag: 'Prop',
 			kind: ASTResultKind.OBJECT,
 			reference: ReferenceKind.PROPS,
 			imports: [],
 			attributes,
 			nodes,
-		};
+		}];
 	}
 
 	return false;

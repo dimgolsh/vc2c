@@ -31,7 +31,7 @@ export const convertWatch: ASTConverter<ts.MethodDeclaration> = (node, options) 
         })
       }
 
-      return {
+      return [{
         tag: 'Watch',
         kind: ASTResultKind.COMPOSITION,
         imports: [{
@@ -60,7 +60,7 @@ export const convertWatch: ASTConverter<ts.MethodDeclaration> = (node, options) 
             )
           )
         ] as ts.Statement[]
-      }
+      }]
     }
   }
 

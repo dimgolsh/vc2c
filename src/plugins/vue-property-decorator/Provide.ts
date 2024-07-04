@@ -14,7 +14,7 @@ export const convertProvide: ASTConverter<ts.PropertyDeclaration> = (node, optio
     const decoratorArguments = (decorator.expression as ts.CallExpression).arguments
     const provideKeyExpr: ts.Expression = (decoratorArguments.length > 0) ? decoratorArguments[0] : tsModule.createStringLiteral(node.name.getText())
 
-    return {
+    return [{
       tag: 'Provide',
       kind: ASTResultKind.COMPOSITION,
       imports: [{
@@ -37,7 +37,7 @@ export const convertProvide: ASTConverter<ts.PropertyDeclaration> = (node, optio
           node
         )
       ] as ts.Statement[]
-    }
+    }]
   }
 
   return false

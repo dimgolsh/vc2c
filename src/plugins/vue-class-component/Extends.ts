@@ -39,7 +39,7 @@ export const convertExtends: ASTConverter<ts.HeritageClause> = (node, options) =
 
 	const nodeRes = ts.createPropertyAssignment(ts.createIdentifier('close'), nodeBody);
 
-	return {
+	return [{
 		tag: 'Prop',
 		kind: ASTResultKind.OBJECT,
 		imports: [{
@@ -49,5 +49,5 @@ export const convertExtends: ASTConverter<ts.HeritageClause> = (node, options) =
 		reference: ReferenceKind.PROPS,
 		attributes: ['close'],
 		nodes: [nodeRes],
-	};
+	}];
 };

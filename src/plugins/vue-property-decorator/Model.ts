@@ -16,7 +16,7 @@ export const convertModel: ASTConverter<ts.PropertyDeclaration> = (node, options
       const eventName = (decoratorArguments[0] as ts.StringLiteral).text
       const propArguments = decoratorArguments[1]
 
-      return {
+      return [{
         tag: 'Model',
         kind: ASTResultKind.OBJECT,
         imports: [],
@@ -45,7 +45,7 @@ export const convertModel: ASTConverter<ts.PropertyDeclaration> = (node, options
             propArguments
           )
         ] as ts.PropertyAssignment[]
-      }
+      }]
     }
   }
 

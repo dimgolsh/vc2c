@@ -74,7 +74,7 @@ export const convertEmitMethod: ASTConverter<ts.MethodDeclaration> = (node, opti
       )
     )
 
-    return {
+    return [{
       tag: 'Emit',
       kind: ASTResultKind.COMPOSITION,
       imports: [],
@@ -97,7 +97,7 @@ export const convertEmitMethod: ASTConverter<ts.MethodDeclaration> = (node, opti
           node
         )
       ] as ts.Statement[]
-    }
+    }]
   }
 
   return false

@@ -15,7 +15,7 @@ export const convertMethod: ASTConverter<ts.MethodDeclaration> = (node, options)
 		node.body ?? tsModule.createBlock([]),
 	);
 
-	return {
+	return [{
 		tag: 'Method',
 		kind: ASTResultKind.COMPOSITION,
 		imports: [],
@@ -34,5 +34,5 @@ export const convertMethod: ASTConverter<ts.MethodDeclaration> = (node, options)
 				node,
 			),
 		] as ts.Statement[],
-	};
+	}];
 };

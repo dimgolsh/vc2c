@@ -157,5 +157,12 @@ export const removeThisAndSort: ASTTransform = (astResults, options) => {
 			break;
 		}
 	} while (result.length < astResults.length);
+
+	console.log(result)
+
+	// Validate to end
+	const validates = result.filter(s => s.reference === ReferenceKind.Validate)
+	result = result.filter(s => s.reference !== ReferenceKind.Validate)
+	result.push(...validates)
 	return result;
 };

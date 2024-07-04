@@ -30,7 +30,7 @@ export const convertInject: ASTConverter<ts.PropertyDeclaration> = (node, option
       }
     }
 
-    return {
+    return [{
       tag: 'Inject',
       kind: ASTResultKind.COMPOSITION,
       imports: [{
@@ -64,7 +64,7 @@ export const convertInject: ASTConverter<ts.PropertyDeclaration> = (node, option
           node
         )
       ] as ts.Statement[]
-    }
+    }]
   }
 
   return false

@@ -34,7 +34,7 @@ export const convertObjData: ASTConverter<ts.MethodDeclaration> = (node, options
       )
     )
 
-    return {
+    return [{
       tag: 'Data-ref',
       kind: ASTResultKind.COMPOSITION,
       imports: [{
@@ -68,7 +68,7 @@ export const convertObjData: ASTConverter<ts.MethodDeclaration> = (node, options
           )
         )
       ] as ts.Statement[]
-    }
+    }]
   }
 
   return false

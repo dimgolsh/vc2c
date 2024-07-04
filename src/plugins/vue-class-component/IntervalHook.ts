@@ -41,7 +41,7 @@ export const convertIntervalHook: ASTConverter<ts.MethodDeclaration> = (node, op
         return el
       })
 
-    return {
+    return [{
       tag: 'IntervalHook',
       kind: ASTResultKind.COMPOSITION,
       attributes: (needNamedImports.length > 0) ? needNamedImports : [],
@@ -51,7 +51,7 @@ export const convertIntervalHook: ASTConverter<ts.MethodDeclaration> = (node, op
       }],
       reference: ReferenceKind.NONE,
       nodes
-    }
+    }]
   }
 
   return false

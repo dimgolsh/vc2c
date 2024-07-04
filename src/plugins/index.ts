@@ -25,7 +25,7 @@ import { addI18nCompos } from './addI18nCompos';
 import { addRefs } from './addRefs';
 import { convertComponents } from './vue-class-component/object/Components';
 import { addRoutesCompos } from './addRoutesCompos';
-import { convertValidate, mergeValidate } from './vue-property-decorator/Validate';
+import { convertValidate, mergeValidate, validateGet } from './vue-property-decorator/Validate';
 import { convertExtends } from './vue-class-component/Extends';
 
 export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
@@ -58,7 +58,7 @@ export function getDefaultPlugins(tsModule: typeof ts): ASTConvertPlugins {
 			convertEmitMethod,
 			convertMethod,
 		],
-		after: [mergeName, mergeProps, mergeValidate, mergeComputed, addRefs, addI18nCompos, addRoutesCompos, removeThisAndSort],
+		after: [mergeName, mergeProps, mergeComputed, addRefs, addI18nCompos, addRoutesCompos, mergeValidate, removeThisAndSort],
 	};
 }
 
@@ -102,7 +102,7 @@ export function getASTResults(
 						for (const converter of objConverters) {
 							const result = converter(property, options, program);
 							if (result) {
-								astResults.push(result);
+								astResults.push(...result);
 								converted = true;
 								break;
 							}
@@ -120,8 +120,9 @@ export function getASTResults(
 					];
 				for (const converter of converters) {
 					const result = converter(child, options, program);
+
 					if (result) {
-						astResults.push(result);
+						astResults.push(...result);
 						break;
 					}
 				}
