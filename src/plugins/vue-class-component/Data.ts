@@ -14,11 +14,9 @@ export const convertData: ASTConverter<ts.PropertyDeclaration> = (node, options,
 
 	const tag = isRef ? 'Data-ref' : 'Data-reactive';
 	const named = isRef ? ['ref'] : ['reactive'];
-	const callExpr = isRef
-		? tsModule.createCall(tsModule.createIdentifier('ref'), undefined, [removeComments(tsModule, node.initializer)])
-		: tsModule.createCall(tsModule.createIdentifier('reactive'), undefined, [
-				removeComments(tsModule, node.initializer),
-		  ]);
+
+	const callExpr =
+		tsModule.createCall(tsModule.createIdentifier(isRef ? 'ref' : 'reactive'), node.type ? [node.type] : undefined, [removeComments(tsModule, node.initializer)]);
 
 	return {
 		tag,

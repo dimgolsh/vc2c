@@ -16,7 +16,7 @@ import { inject } from 'common/di';
 import { INotificationModel } from '@/services/notifications';
 import { ScText } from '@smartcat/design-system';
 import { Popup } from 'common/popup/types';
-import { IInvoiceModel } from 'api/portal/payments';
+import { IInvoiceModel, IFileModel } from 'api/portal/payments';
 
 @Component({ i18n, components: { NotificationTemplate, MdButton } })
 export default class Notification extends Popup<IInvoiceModel> {
@@ -48,6 +48,9 @@ export default class Notification extends Popup<IInvoiceModel> {
 	
 	public currency = Currency;
 	public files: IFileModel[] = null;
+	public file: IFileModel = null;
+	isShownResults = true
+	ids: string[] = null
 
 	private readonly segmentsService = inject(SegmentsService);
 	private readonly languagesStore = inject(LanguagesStore);
@@ -81,7 +84,7 @@ export default class Notification extends Popup<IInvoiceModel> {
 		}
 	}
 
-	isShownResults = true
+
 
 	mounted() {
 		this.$nextTick();
