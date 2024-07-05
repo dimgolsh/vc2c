@@ -59,6 +59,9 @@ The files to be converted must meet the criterias below:
 - [x] add `useI18n` from `$t`.
 - [x] add `PropType<Type>` for `props`.
 - [x] check and `(props, {emit})` from `setup`.
+- [x] Add Vuelidate converter.
+- [x] Add Heritage clause popup converter.
+- [x] Add route/router converter.
 
 
 ## Usage
